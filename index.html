@@ -1,0 +1,1446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QuickerSite Template Builder</title>
+<style>
+/* ============================================================
+   QS TEMPLATE BUILDER - SELF-CONTAINED STYLES
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f1117;--bg2:#1a1d27;--bg3:#242836;--bg4:#2e3347;
+  --fg:#e8eaf0;--fg2:#a0a5b8;--fg3:#6b7089;
+  --accent:#6c5ce7;--accent2:#a29bfe;--accent-glow:rgba(108,92,231,.25);
+  --success:#00b894;--warning:#fdcb6e;--danger:#e17055;
+  --radius:10px;--radius-sm:6px;--shadow:0 4px 24px rgba(0,0,0,.35);
+  --font:'Segoe UI',system-ui,-apple-system,sans-serif;
+  --mono:'Cascadia Code','Fira Code','SF Mono',monospace;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--fg);line-height:1.6;min-height:100vh}
+a{color:var(--accent2);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* Header */
+.app-header{
+  background:linear-gradient(135deg,var(--bg2) 0%,var(--bg3) 100%);
+  border-bottom:1px solid var(--bg4);padding:1.5rem 2rem;
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;
+}
+.app-header h1{font-size:1.5rem;font-weight:700;letter-spacing:-.02em}
+.app-header h1 span{color:var(--accent2);font-weight:400}
+.app-header p{color:var(--fg2);font-size:.85rem}
+
+/* Layout */
+.app-body{display:flex;min-height:calc(100vh - 80px)}
+.sidebar{
+  width:340px;min-width:340px;background:var(--bg2);border-right:1px solid var(--bg4);
+  overflow-y:auto;padding:1.25rem;display:flex;flex-direction:column;gap:1rem;
+}
+.main-area{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.preview-bar{
+  background:var(--bg2);border-bottom:1px solid var(--bg4);
+  padding:.6rem 1.25rem;display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;
+}
+.preview-content{flex:1;overflow:auto;position:relative}
+
+/* Panels */
+.panel{background:var(--bg3);border-radius:var(--radius);border:1px solid var(--bg4)}
+.panel-head{
+  padding:.75rem 1rem;font-size:.8rem;font-weight:600;text-transform:uppercase;
+  letter-spacing:.06em;color:var(--fg2);cursor:pointer;display:flex;align-items:center;
+  justify-content:space-between;user-select:none;
+}
+.panel-head::after{content:'\25BC';font-size:.6rem;transition:transform .2s}
+.panel.collapsed .panel-head::after{transform:rotate(-90deg)}
+.panel.collapsed .panel-body{display:none}
+.panel-body{padding:.75rem 1rem;display:flex;flex-direction:column;gap:.6rem}
+
+/* Form controls */
+label.ctrl{display:flex;flex-direction:column;gap:.25rem;font-size:.78rem;color:var(--fg2)}
+label.ctrl span{font-weight:500}
+select,input[type="text"],input[type="number"],input[type="color"],textarea{
+  background:var(--bg);border:1px solid var(--bg4);border-radius:var(--radius-sm);
+  color:var(--fg);padding:.45rem .6rem;font-size:.82rem;font-family:var(--font);
+  transition:border-color .15s;width:100%;
+}
+select:focus,input:focus,textarea:focus{outline:none;border-color:var(--accent)}
+input[type="color"]{padding:2px;height:34px;cursor:pointer}
+textarea{resize:vertical;min-height:60px;font-family:var(--mono);font-size:.75rem}
+input[type="range"]{accent-color:var(--accent)}
+
+.row-2{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.6rem}
+
+/* Checkbox / toggle */
+label.toggle{
+  display:flex;align-items:center;gap:.5rem;font-size:.78rem;color:var(--fg2);cursor:pointer;
+}
+label.toggle input{accent-color:var(--accent);width:16px;height:16px}
+
+/* Buttons */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:.4rem;
+  padding:.55rem 1.1rem;border-radius:var(--radius-sm);font-size:.82rem;font-weight:600;
+  border:none;cursor:pointer;transition:all .15s;font-family:var(--font);white-space:nowrap;
+}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:#5a4bd6;box-shadow:0 0 16px var(--accent-glow)}
+.btn-secondary{background:var(--bg4);color:var(--fg)}
+.btn-secondary:hover{background:#3a3f57}
+.btn-success{background:var(--success);color:#fff}
+.btn-success:hover{background:#00a382}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-sm{padding:.35rem .7rem;font-size:.75rem}
+.btn-block{width:100%}
+
+.btn-group{display:flex;gap:.4rem;flex-wrap:wrap}
+
+/* Tabs for preview */
+.tab-group{display:flex;gap:2px}
+.tab-group .tab{
+  padding:.35rem .8rem;font-size:.75rem;font-weight:600;border-radius:var(--radius-sm);
+  background:transparent;color:var(--fg3);border:none;cursor:pointer;font-family:var(--font);
+}
+.tab-group .tab.active{background:var(--accent);color:#fff}
+
+/* Preview iframe */
+#previewFrame{
+  width:100%;height:100%;border:none;background:#fff;transition:width .3s,margin .3s;
+}
+.preview-content.mobile #previewFrame{
+  width:375px;margin:0 auto;border-left:1px solid var(--bg4);border-right:1px solid var(--bg4);
+}
+
+/* Source view */
+#sourceView{
+  display:none;width:100%;height:100%;overflow:auto;padding:1rem;
+  background:var(--bg);font-family:var(--mono);font-size:.78rem;
+  color:var(--accent2);white-space:pre-wrap;word-break:break-all;tab-size:2;
+}
+#sourceView.active{display:block}
+#previewFrame.hidden{display:none}
+
+/* Color chips */
+.color-row{display:flex;gap:.35rem;flex-wrap:wrap;margin-top:.25rem}
+.color-chip{
+  width:28px;height:28px;border-radius:50%;border:2px solid transparent;cursor:pointer;
+  transition:border-color .15s,transform .15s;
+}
+.color-chip:hover,.color-chip.active{border-color:var(--accent);transform:scale(1.15)}
+
+/* Toast */
+.toast{
+  position:fixed;bottom:1.5rem;right:1.5rem;background:var(--success);color:#fff;
+  padding:.65rem 1.2rem;border-radius:var(--radius);font-size:.82rem;font-weight:600;
+  box-shadow:var(--shadow);transform:translateY(100px);opacity:0;transition:all .3s;
+  z-index:9999;
+}
+.toast.show{transform:translateY(0);opacity:1}
+
+/* Badge */
+.badge{
+  display:inline-block;padding:.15rem .45rem;border-radius:3px;font-size:.65rem;
+  font-weight:700;text-transform:uppercase;letter-spacing:.04em;
+}
+.badge-accent{background:var(--accent);color:#fff}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:7px;height:7px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--fg3)}
+
+/* Responsive */
+@media(max-width:900px){
+  .app-body{flex-direction:column}
+  .sidebar{width:100%;min-width:0;max-height:50vh}
+}
+
+/* Generation counter */
+.gen-counter{
+  background:var(--bg);border:1px solid var(--bg4);border-radius:var(--radius-sm);
+  padding:.25rem .6rem;font-size:.75rem;color:var(--fg3);
+}
+
+/* Header image browser */
+.img-browser{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:.4rem;
+  max-height:260px;overflow-y:auto;padding-right:2px;
+}
+.img-thumb{
+  aspect-ratio:16/7;border-radius:4px;cursor:pointer;overflow:hidden;
+  border:2px solid transparent;transition:border-color .15s,transform .15s;
+  position:relative;background:var(--bg);
+}
+.img-thumb:hover{border-color:var(--accent);transform:scale(1.04)}
+.img-thumb.active{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.img-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.img-thumb .img-label{
+  position:absolute;bottom:0;left:0;right:0;padding:2px 4px;
+  background:rgba(0,0,0,.65);color:#fff;font-size:.55rem;
+  text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.img-none-btn{
+  grid-column:1/-1;padding:.35rem;text-align:center;font-size:.72rem;
+  background:var(--bg4);border-radius:4px;cursor:pointer;color:var(--fg2);
+  border:2px solid transparent;transition:border-color .15s;
+}
+.img-none-btn:hover{border-color:var(--accent)}
+.img-none-btn.active{border-color:var(--accent)}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     HEADER
+     ============================================================ -->
+<header class="app-header">
+  <div>
+    <h1>QuickerSite <span>Template Builder</span></h1>
+    <p>Fully automated random template generation for QuickerSite CMS</p>
+  </div>
+  <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap">
+    <button class="btn btn-success btn-sm" onclick="downloadTemplate()">Download Template</button>
+    <button class="btn btn-secondary btn-sm" onclick="copySource()">Copy Source</button>
+    <span class="gen-counter" id="genCounter">Templates generated: 0</span>
+    <a href="https://quickersite.com" target="_blank" style="font-size:.78rem;color:var(--fg3)">quickersite.com</a>
+  </div>
+</header>
+
+<div class="app-body">
+
+<!-- ============================================================
+     SIDEBAR
+     ============================================================ -->
+<aside class="sidebar" id="sidebar">
+
+  <!-- GENERATE -->
+  <button class="btn btn-primary btn-block" onclick="generateTemplate()" style="padding:.75rem;font-size:.95rem">
+    Suggest Random Template
+  </button>
+
+  <!-- QUICK OPTIONS -->
+  <div class="panel">
+    <div class="panel-head" onclick="togglePanel(this)">Quick Options</div>
+    <div class="panel-body">
+      <label class="toggle"><input type="checkbox" id="optKeepColors"> Keep current colors</label>
+      <label class="toggle"><input type="checkbox" id="optKeepFonts"> Keep current fonts</label>
+      <label class="toggle"><input type="checkbox" id="optKeepLayout"> Keep current layout</label>
+      <label class="toggle"><input type="checkbox" id="optIncludeSearch" checked> Include search form</label>
+      <label class="toggle"><input type="checkbox" id="optIncludeSidebar" checked> Include sidebar</label>
+      <label class="toggle"><input type="checkbox" id="optIncludeBanners" checked> Include banners / highlights</label>
+      <label class="toggle"><input type="checkbox" id="optIncludeFooter" checked> Include footer</label>
+    </div>
+  </div>
+
+  <!-- COLORS -->
+  <div class="panel">
+    <div class="panel-head" onclick="togglePanel(this)">Color Scheme</div>
+    <div class="panel-body">
+      <div class="row-2">
+        <label class="ctrl"><span>Primary</span><input type="color" id="colorPrimary" value="#6c5ce7"></label>
+        <label class="ctrl"><span>Secondary</span><input type="color" id="colorSecondary" value="#00b894"></label>
+      </div>
+      <div class="row-2">
+        <label class="ctrl"><span>Background</span><input type="color" id="colorBg" value="#ffffff"></label>
+        <label class="ctrl"><span>Text</span><input type="color" id="colorText" value="#2d3436"></label>
+      </div>
+      <div class="row-2">
+        <label class="ctrl"><span>Header BG</span><input type="color" id="colorHeader" value="#2d3436"></label>
+        <label class="ctrl"><span>Footer BG</span><input type="color" id="colorFooter" value="#2d3436"></label>
+      </div>
+      <div style="margin-top:.35rem">
+        <span style="font-size:.72rem;color:var(--fg3)">Presets:</span>
+        <div class="color-row" id="colorPresets"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TYPOGRAPHY -->
+  <div class="panel">
+    <div class="panel-head" onclick="togglePanel(this)">Typography</div>
+    <div class="panel-body">
+      <label class="ctrl">
+        <span>Heading Font</span>
+        <select id="fontHeading">
+          <option>Inter</option><option>Poppins</option><option>Montserrat</option>
+          <option>Playfair Display</option><option>Merriweather</option><option>Raleway</option>
+          <option>Oswald</option><option>Roboto Slab</option><option>Lora</option>
+          <option>Nunito</option><option>Source Sans 3</option><option>DM Sans</option>
+          <option>Work Sans</option><option>Outfit</option><option>Plus Jakarta Sans</option>
+        </select>
+      </label>
+      <label class="ctrl">
+        <span>Body Font</span>
+        <select id="fontBody">
+          <option>Inter</option><option>Open Sans</option><option>Roboto</option>
+          <option>Lato</option><option>Source Sans 3</option><option>Nunito Sans</option>
+          <option>PT Sans</option><option>Merriweather</option><option>Noto Sans</option>
+          <option>DM Sans</option><option>Work Sans</option><option>Karla</option>
+          <option>Rubik</option><option>Outfit</option><option>Plus Jakarta Sans</option>
+        </select>
+      </label>
+      <div class="row-2">
+        <label class="ctrl"><span>Base Size (px)</span><input type="number" id="fontSize" value="16" min="12" max="22"></label>
+        <label class="ctrl"><span>Line Height</span><input type="number" id="lineHeight" value="1.6" min="1.2" max="2.2" step="0.1"></label>
+      </div>
+    </div>
+  </div>
+
+  <!-- LAYOUT -->
+  <div class="panel">
+    <div class="panel-head" onclick="togglePanel(this)">Layout</div>
+    <div class="panel-body">
+      <label class="ctrl">
+        <span>Layout Style</span>
+        <select id="layoutStyle">
+          <option value="wide">Wide (full-width header)</option>
+          <option value="boxed">Boxed (centered container)</option>
+        </select>
+      </label>
+      <label class="ctrl">
+        <span>Max Width (px)</span>
+        <input type="number" id="maxWidth" value="1200" min="900" max="1600" step="20">
+      </label>
+      <label class="ctrl">
+        <span>Sidebar Position</span>
+        <select id="sidebarPos">
+          <option value="right">Right</option>
+          <option value="left">Left</option>
+          <option value="none">No sidebar</option>
+        </select>
+      </label>
+      <label class="ctrl">
+        <span>Header Style</span>
+        <select id="headerStyle">
+          <option value="classic">Classic (Logo + Nav below)</option>
+          <option value="centered">Centered (Logo centered)</option>
+          <option value="split">Split (Logo left, Nav right)</option>
+          <option value="overlay">Overlay (Transparent on hero)</option>
+          <option value="minimal">Minimal (Compact bar)</option>
+        </select>
+      </label>
+      <label class="ctrl">
+        <span>Footer Columns</span>
+        <select id="footerCols">
+          <option value="1">Single column</option>
+          <option value="2">Two columns</option>
+          <option value="3">Three columns</option>
+          <option value="4">Four columns</option>
+        </select>
+      </label>
+    </div>
+  </div>
+
+  <!-- HERO / HEADER IMAGE -->
+  <div class="panel">
+    <div class="panel-head" onclick="togglePanel(this)">Hero Section</div>
+    <div class="panel-body">
+      <label class="toggle"><input type="checkbox" id="optHero" checked> Include hero / header section</label>
+      <label class="ctrl">
+        <span>Hero Style</span>
+        <select id="heroStyle">
+          <option value="image">Background image (Unsplash)</option>
+          <option value="gradient">Gradient background</option>
+          <option value="solid">Solid color</option>
+          <option value="pattern">CSS pattern</option>
+          <option value="split">Split (text + image area)</option>
+        </select>
+      </label>
+      <label class="ctrl">
+        <span>Hero Height</span>
+        <select id="heroHeight">
+          <option value="small">Small (200px)</option>
+          <option value="medium">Medium (350px)</option>
+          <option value="large">Large (500px)</option>
+          <option value="fullscreen">Full screen</option>
+        </select>
+      </label>
+      <div id="heroImagePanel">
+        <span style="font-size:.72rem;color:var(--fg2);font-weight:500">Header Background Image</span>
+        <div class="img-browser" id="imgBrowser"></div>
+      </div>
+      <input type="hidden" id="heroImage" value="">
+    </div>
+  </div>
+
+  <!-- ADVANCED -->
+  <div class="panel collapsed">
+    <div class="panel-head" onclick="togglePanel(this)">Advanced / QS Variables</div>
+    <div class="panel-body">
+      <p style="font-size:.7rem;color:var(--fg3);margin-bottom:.4rem">All standard QuickerSite variables are automatically placed. Below you can toggle optional ones.</p>
+      <label class="toggle"><input type="checkbox" id="optRSS"> Include [RSSLINKART] RSS icon</label>
+      <label class="toggle"><input type="checkbox" id="optAnalytics" checked> Include [GOOGLEANALYTICS]</label>
+      <label class="toggle"><input type="checkbox" id="optBreadcrumbs" checked> Include [PAGEBREADCRUMBS] in content</label>
+    </div>
+  </div>
+
+
+</aside>
+
+<!-- ============================================================
+     MAIN / PREVIEW
+     ============================================================ -->
+<div class="main-area">
+  <div class="preview-bar">
+    <div class="tab-group">
+      <button class="tab active" onclick="switchView('preview',this)">Preview</button>
+      <button class="tab" onclick="switchView('source',this)">Source Code</button>
+    </div>
+    <div class="tab-group" style="margin-left:.5rem">
+      <button class="tab active" onclick="switchDevice('desktop',this)">Desktop</button>
+      <button class="tab" onclick="switchDevice('mobile',this)">Mobile</button>
+    </div>
+    <div style="flex:1"></div>
+    <button class="btn btn-success btn-sm" onclick="downloadTemplate()">Download Template</button>
+    <button class="btn btn-secondary btn-sm" onclick="copySource()">Copy Source</button>
+  </div>
+  <div class="preview-content" id="previewContainer">
+    <iframe id="previewFrame"></iframe>
+    <pre id="sourceView"></pre>
+  </div>
+</div>
+
+</div><!-- /app-body -->
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- ============================================================
+     JAVASCRIPT ENGINE
+     ============================================================ -->
+<script>
+(function(){
+"use strict";
+
+/* ===========================================================
+   RANDOM HELPERS
+   =========================================================== */
+const pick = arr => arr[Math.floor(Math.random()*arr.length)];
+const rand = (min,max) => Math.floor(Math.random()*(max-min+1))+min;
+const clamp = (v,lo,hi) => Math.max(lo,Math.min(hi,v));
+function hexToHSL(hex){
+  let r=parseInt(hex.slice(1,3),16)/255, g=parseInt(hex.slice(3,5),16)/255, b=parseInt(hex.slice(5,7),16)/255;
+  let max=Math.max(r,g,b), min=Math.min(r,g,b), h,s,l=(max+min)/2;
+  if(max===min){h=s=0}else{
+    let d=max-min; s=l>.5?d/(2-max-min):d/(max+min);
+    switch(max){case r:h=((g-b)/d+(g<b?6:0))/6;break;case g:h=((b-r)/d+2)/6;break;case b:h=((r-g)/d+4)/6;break}
+  }
+  return [Math.round(h*360),Math.round(s*100),Math.round(l*100)];
+}
+function hslToHex(h,s,l){
+  s/=100;l/=100;
+  let c=(1-Math.abs(2*l-1))*s, x=c*(1-Math.abs((h/60)%2-1)), m=l-c/2, r=0,g=0,b=0;
+  if(h<60){r=c;g=x}else if(h<120){r=x;g=c}else if(h<180){g=c;b=x}
+  else if(h<240){g=x;b=c}else if(h<300){r=x;b=c}else{r=c;b=x}
+  r=Math.round((r+m)*255).toString(16).padStart(2,'0');
+  g=Math.round((g+m)*255).toString(16).padStart(2,'0');
+  b=Math.round((b+m)*255).toString(16).padStart(2,'0');
+  return '#'+r+g+b;
+}
+function lighten(hex,pct){let [h,s,l]=hexToHSL(hex);return hslToHex(h,s,clamp(l+pct,0,100))}
+function darken(hex,pct){return lighten(hex,-pct)}
+function rgba(hex,a){let r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return `rgba(${r},${g},${b},${a})`}
+function contrastColor(hex){let [,,l]=hexToHSL(hex);return l>55?'#2d3436':'#ffffff'}
+
+/* ===========================================================
+   DATA: COLOR SCHEMES, FONTS, CSS PATTERNS
+   =========================================================== */
+const COLOR_SCHEMES = [
+  {primary:'#6c5ce7',secondary:'#00b894',bg:'#ffffff',text:'#2d3436',header:'#2d3436',footer:'#2d3436',name:'Ultraviolet'},
+  {primary:'#0984e3',secondary:'#00cec9',bg:'#ffffff',text:'#2d3436',header:'#0984e3',footer:'#2d3436',name:'Ocean'},
+  {primary:'#e17055',secondary:'#fdcb6e',bg:'#ffeaa7',text:'#2d3436',header:'#d63031',footer:'#2d3436',name:'Sunset'},
+  {primary:'#00b894',secondary:'#55efc4',bg:'#ffffff',text:'#2d3436',header:'#00b894',footer:'#1e272e',name:'Emerald'},
+  {primary:'#e84393',secondary:'#fd79a8',bg:'#ffffff',text:'#2d3436',header:'#6c5ce7',footer:'#2d3436',name:'Berry'},
+  {primary:'#2d3436',secondary:'#636e72',bg:'#ffffff',text:'#2d3436',header:'#2d3436',footer:'#2d3436',name:'Monochrome'},
+  {primary:'#0652DD',secondary:'#1289A7',bg:'#f5f6fa',text:'#2f3640',header:'#1B1464',footer:'#1B1464',name:'Midnight'},
+  {primary:'#c0392b',secondary:'#e74c3c',bg:'#ffffff',text:'#2c3e50',header:'#2c3e50',footer:'#2c3e50',name:'Executive'},
+  {primary:'#27ae60',secondary:'#2ecc71',bg:'#ffffff',text:'#2c3e50',header:'#ffffff',footer:'#2c3e50',name:'Fresh'},
+  {primary:'#f39c12',secondary:'#e67e22',bg:'#ffffff',text:'#2c3e50',header:'#34495e',footer:'#2c3e50',name:'Amber'},
+  {primary:'#8e44ad',secondary:'#9b59b6',bg:'#f8f9fa',text:'#2c3e50',header:'#2c3e50',footer:'#1a1a2e',name:'Royal'},
+  {primary:'#1abc9c',secondary:'#16a085',bg:'#ecf0f1',text:'#2c3e50',header:'#2c3e50',footer:'#2c3e50',name:'Teal'},
+  {primary:'#e74c3c',secondary:'#f39c12',bg:'#1a1a2e',text:'#eaeaea',header:'#16213e',footer:'#0f3460',name:'Dark Flame'},
+  {primary:'#00d2ff',secondary:'#3a7bd5',bg:'#0a0a23',text:'#e0e0e0',header:'#1a1a40',footer:'#0a0a23',name:'Cyber'},
+  {primary:'#f5af19',secondary:'#f12711',bg:'#fdf6e3',text:'#3c3c3c',header:'#3c3c3c',footer:'#2d2d2d',name:'Warm'},
+  {primary:'#667eea',secondary:'#764ba2',bg:'#ffffff',text:'#333333',header:'#1a1a2e',footer:'#16213e',name:'Indigo Night'},
+];
+
+const HEADING_FONTS = ['Inter','Poppins','Montserrat','Playfair Display','Merriweather','Raleway','Oswald','Roboto Slab','Lora','Nunito','Source Sans 3','DM Sans','Work Sans','Outfit','Plus Jakarta Sans'];
+const BODY_FONTS = ['Inter','Open Sans','Roboto','Lato','Source Sans 3','Nunito Sans','PT Sans','Merriweather','Noto Sans','DM Sans','Work Sans','Karla','Rubik','Outfit','Plus Jakarta Sans'];
+
+const CSS_PATTERNS = [
+  (c)=>`background:repeating-linear-gradient(45deg,${c},${c} 10px,${lighten(c,5)} 10px,${lighten(c,5)} 20px)`,
+  (c)=>`background:radial-gradient(circle at 25% 50%,${lighten(c,10)} 0%,${c} 100%)`,
+  (c)=>`background:linear-gradient(135deg,${c} 25%,${lighten(c,8)} 25%,${lighten(c,8)} 50%,${c} 50%,${c} 75%,${lighten(c,8)} 75%);background-size:40px 40px`,
+  (c)=>`background:${c};background-image:radial-gradient(${lighten(c,15)} 1px,transparent 1px);background-size:20px 20px`,
+  (c)=>`background:linear-gradient(60deg,${c} 0%,${lighten(c,12)} 50%,${darken(c,5)} 100%)`,
+];
+
+/* ===========================================================
+   HEADER BACKGROUND IMAGES (Unsplash)
+   =========================================================== */
+const HEADER_IMAGES = [
+  // Nature / Landscapes
+  {id:'mountain-clouds',   label:'Mountain Clouds',    url:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600&h=500&fit=crop&q=80'},
+  {id:'mountain-stars',    label:'Starry Mountains',   url:'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1600&h=500&fit=crop&q=80'},
+  {id:'foggy-highlands',   label:'Foggy Highlands',    url:'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1600&h=500&fit=crop&q=80'},
+  {id:'forest-sunlight',   label:'Forest Sunlight',    url:'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1600&h=500&fit=crop&q=80'},
+  {id:'mountain-dramatic',  label:'Dramatic Valley',    url:'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1600&h=500&fit=crop&q=80'},
+  {id:'green-valley',      label:'Green Valley',       url:'https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?w=1600&h=500&fit=crop&q=80'},
+
+  // Ocean / Beach
+  {id:'tropical-beach',    label:'Tropical Beach',     url:'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1600&h=500&fit=crop&q=80'},
+  {id:'ocean-waves',       label:'Ocean Waves',        url:'https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=1600&h=500&fit=crop&q=80'},
+  {id:'ocean-aerial',      label:'Ocean Aerial',       url:'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1600&h=500&fit=crop&q=80'},
+  {id:'beach-sunset',      label:'Beach Sunset',       url:'https://images.unsplash.com/photo-1505144808419-1957a94ca61e?w=1600&h=500&fit=crop&q=80'},
+
+  // City / Architecture
+  {id:'toronto-skyline',   label:'Toronto Skyline',    url:'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1600&h=500&fit=crop&q=80'},
+  {id:'nyc-street',        label:'NYC Street',         url:'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=1600&h=500&fit=crop&q=80'},
+  {id:'nyc-skyline',       label:'NYC Skyline',        url:'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=1600&h=500&fit=crop&q=80'},
+  {id:'city-night',        label:'City at Night',      url:'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=1600&h=500&fit=crop&q=80'},
+
+  // Abstract / Gradients
+  {id:'teal-gradient',     label:'Teal Gradient',      url:'https://images.unsplash.com/photo-1557683316-973673baf926?w=1600&h=500&fit=crop&q=80'},
+  {id:'marble-abstract',   label:'Marble Abstract',    url:'https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?w=1600&h=500&fit=crop&q=80'},
+  {id:'neon-dark',         label:'Neon Dark',          url:'https://images.unsplash.com/photo-1550684376-efcbd6e3f031?w=1600&h=500&fit=crop&q=80'},
+  {id:'colorful-gradient', label:'Colorful Gradient',  url:'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=1600&h=500&fit=crop&q=80'},
+  {id:'dark-blue',         label:'Dark Blue',          url:'https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?w=1600&h=500&fit=crop&q=80'},
+
+  // Technology / Workspace
+  {id:'office-workspace',  label:'Office Workspace',   url:'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1600&h=500&fit=crop&q=80'},
+  {id:'modern-office',     label:'Modern Office',      url:'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&h=500&fit=crop&q=80'},
+  {id:'tech-laptop',       label:'Tech Laptop',        url:'https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=1600&h=500&fit=crop&q=80'},
+
+  // Space / Sky
+  {id:'earth-space',       label:'Earth from Space',   url:'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1600&h=500&fit=crop&q=80'},
+];
+
+/* ===========================================================
+   BUILD IMAGE BROWSER UI
+   =========================================================== */
+const imgBrowserEl = document.getElementById('imgBrowser');
+// "No image" option
+const noneBtn = document.createElement('div');
+noneBtn.className = 'img-none-btn';
+noneBtn.textContent = 'No background image (use color/gradient)';
+noneBtn.onclick = function(){
+  document.querySelectorAll('.img-thumb,.img-none-btn').forEach(t=>t.classList.remove('active'));
+  noneBtn.classList.add('active');
+  document.getElementById('heroImage').value = '';
+  setSelect('heroStyle', 'gradient');
+};
+imgBrowserEl.appendChild(noneBtn);
+
+HEADER_IMAGES.forEach(img=>{
+  const thumb = document.createElement('div');
+  thumb.className = 'img-thumb';
+  thumb.title = img.label;
+  thumb.dataset.url = img.url;
+  thumb.dataset.id = img.id;
+  // Lazy-load thumbnail with smaller size
+  const thumbUrl = img.url.replace('w=1600','w=200').replace('h=500','h=88');
+  thumb.innerHTML = `<img src="${thumbUrl}" alt="${img.label}" loading="lazy"><div class="img-label">${img.label}</div>`;
+  thumb.onclick = function(){
+    document.querySelectorAll('.img-thumb,.img-none-btn').forEach(t=>t.classList.remove('active'));
+    thumb.classList.add('active');
+    document.getElementById('heroImage').value = img.url;
+    setSelect('heroStyle', 'image');
+  };
+  imgBrowserEl.appendChild(thumb);
+});
+
+/* ===========================================================
+   BUILD COLOR PRESETS UI
+   =========================================================== */
+const presetsEl = document.getElementById('colorPresets');
+COLOR_SCHEMES.forEach((s,i)=>{
+  const chip = document.createElement('div');
+  chip.className = 'color-chip';
+  chip.style.background = `linear-gradient(135deg,${s.primary} 50%,${s.secondary} 50%)`;
+  chip.title = s.name;
+  chip.onclick = ()=>{
+    document.getElementById('colorPrimary').value = s.primary;
+    document.getElementById('colorSecondary').value = s.secondary;
+    document.getElementById('colorBg').value = s.bg;
+    document.getElementById('colorText').value = s.text;
+    document.getElementById('colorHeader').value = s.header;
+    document.getElementById('colorFooter').value = s.footer;
+    document.querySelectorAll('.color-chip').forEach(c=>c.classList.remove('active'));
+    chip.classList.add('active');
+    liveUpdate();
+  };
+  presetsEl.appendChild(chip);
+});
+
+/* ===========================================================
+   STATE
+   =========================================================== */
+let genCount = 0;
+let currentSource = '';
+let currentState = {};
+
+/* ===========================================================
+   READ UI STATE
+   =========================================================== */
+function readState(){
+  return {
+    colorPrimary: document.getElementById('colorPrimary').value,
+    colorSecondary: document.getElementById('colorSecondary').value,
+    colorBg: document.getElementById('colorBg').value,
+    colorText: document.getElementById('colorText').value,
+    colorHeader: document.getElementById('colorHeader').value,
+    colorFooter: document.getElementById('colorFooter').value,
+    fontHeading: document.getElementById('fontHeading').value,
+    fontBody: document.getElementById('fontBody').value,
+    fontSize: parseInt(document.getElementById('fontSize').value)||16,
+    lineHeight: parseFloat(document.getElementById('lineHeight').value)||1.6,
+    layoutStyle: document.getElementById('layoutStyle').value,
+    maxWidth: parseInt(document.getElementById('maxWidth').value)||1200,
+    sidebarPos: document.getElementById('sidebarPos').value,
+    headerStyle: document.getElementById('headerStyle').value,
+    footerCols: parseInt(document.getElementById('footerCols').value)||3,
+    heroEnabled: document.getElementById('optHero').checked,
+    heroStyle: document.getElementById('heroStyle').value,
+    heroHeight: document.getElementById('heroHeight').value,
+    heroImage: document.getElementById('heroImage').value,
+    includeSearch: document.getElementById('optIncludeSearch').checked,
+    includeSidebar: document.getElementById('optIncludeSidebar').checked,
+    includeBanners: document.getElementById('optIncludeBanners').checked,
+    includeFooter: document.getElementById('optIncludeFooter').checked,
+    includeRSS: document.getElementById('optRSS').checked,
+    includeAnalytics: document.getElementById('optAnalytics').checked,
+
+    includeBreadcrumbs: document.getElementById('optBreadcrumbs').checked,
+  };
+}
+
+/* ===========================================================
+   APPLY RANDOM STATE TO UI
+   =========================================================== */
+function randomizeUI(){
+  const keepColors = document.getElementById('optKeepColors').checked;
+  const keepFonts = document.getElementById('optKeepFonts').checked;
+  const keepLayout = document.getElementById('optKeepLayout').checked;
+
+  if(!keepColors){
+    const scheme = pick(COLOR_SCHEMES);
+    document.getElementById('colorPrimary').value = scheme.primary;
+    document.getElementById('colorSecondary').value = scheme.secondary;
+    document.getElementById('colorBg').value = scheme.bg;
+    document.getElementById('colorText').value = scheme.text;
+    document.getElementById('colorHeader').value = scheme.header;
+    document.getElementById('colorFooter').value = scheme.footer;
+    document.querySelectorAll('.color-chip').forEach(c=>c.classList.remove('active'));
+  }
+  if(!keepFonts){
+    setSelect('fontHeading', pick(HEADING_FONTS));
+    setSelect('fontBody', pick(BODY_FONTS));
+    document.getElementById('fontSize').value = pick([15,16,17]);
+    document.getElementById('lineHeight').value = pick([1.5,1.6,1.7,1.8]);
+  }
+  if(!keepLayout){
+    setSelect('layoutStyle', pick(['wide','wide','boxed']));
+    document.getElementById('maxWidth').value = pick([1100,1140,1200,1280,1320]);
+    setSelect('sidebarPos', pick(['right','right','left','none']));
+    setSelect('headerStyle', pick(['classic','centered','split','overlay','minimal']));
+    setSelect('footerCols', String(pick([2,3,3,4])));
+    setSelect('heroStyle', pick(['image','image','image','gradient','gradient','solid','pattern','split']));
+    setSelect('heroHeight', pick(['small','medium','medium','large']));
+    // Pick a random header image
+    const randomImg = pick(HEADER_IMAGES);
+    document.getElementById('heroImage').value = randomImg.url;
+    document.querySelectorAll('.img-thumb,.img-none-btn').forEach(t=>t.classList.remove('active'));
+    const matchThumb = document.querySelector(`.img-thumb[data-id="${randomImg.id}"]`);
+    if(matchThumb) matchThumb.classList.add('active');
+    document.getElementById('optHero').checked = Math.random()>.15;
+    document.getElementById('optIncludeSidebar').checked = Math.random()>.25;
+    document.getElementById('optIncludeBanners').checked = Math.random()>.2;
+  }
+}
+
+function setSelect(id,val){
+  const el=document.getElementById(id);
+  for(let o of el.options){if(o.value===val){el.value=val;return}}
+}
+
+/* ===========================================================
+   GENERATE TEMPLATE
+   =========================================================== */
+let _skipLive = false;
+window.generateTemplate = function(){
+  _skipLive = true;
+  randomizeUI();
+  _skipLive = false;
+  rebuildFromState();
+  showToast('New template generated!');
+};
+
+/* ===========================================================
+   LIVE UPDATE (rebuild from current UI state, no randomization)
+   Debounced so rapid changes (e.g. dragging a color picker) stay smooth.
+   =========================================================== */
+let _liveTimer = null;
+function liveUpdate(){
+  if(_skipLive) return; // ignore events fired during randomizeUI
+  clearTimeout(_liveTimer);
+  _liveTimer = setTimeout(rebuildFromState, 80);
+}
+
+function rebuildFromState(){
+  const st = readState();
+  currentState = st;
+  currentSource = buildTemplate(st);
+  genCount++;
+  document.getElementById('genCounter').textContent = 'Templates generated: '+genCount;
+  renderPreview();
+}
+
+/* ===========================================================
+   BUILD TEMPLATE HTML
+   =========================================================== */
+function buildTemplate(s){
+  const isDark = hexToHSL(s.colorBg)[2] < 40;
+  const textOnHeader = contrastColor(s.colorHeader);
+  const textOnFooter = contrastColor(s.colorFooter);
+  const textOnPrimary = contrastColor(s.colorPrimary);
+  // Ensure links are always visually distinct from both text and background
+  let linkColor = isDark ? lighten(s.colorPrimary, 20) : s.colorPrimary;
+  const [,, textL] = hexToHSL(s.colorText);
+  const [,, bgL] = hexToHSL(s.colorBg);
+  let [,, linkL] = hexToHSL(linkColor);
+  // Check contrast vs text
+  if(Math.abs(linkL - textL) < 20){
+    linkColor = isDark ? lighten(s.colorPrimary, 35) : darken(s.colorPrimary, 25);
+    linkL = hexToHSL(linkColor)[2];
+  }
+  // Check contrast vs background (links must stand out from the page)
+  if(Math.abs(linkL - bgL) < 25){
+    linkColor = isDark ? lighten(s.colorPrimary, 40) : darken(s.colorPrimary, 30);
+  }
+  let linkHover = isDark ? lighten(linkColor, 12) : darken(linkColor, 12);
+  const borderColor = isDark ? lighten(s.colorBg, 12) : darken(s.colorBg, 10);
+  const surfaceColor = isDark ? lighten(s.colorBg, 5) : darken(s.colorBg, 3);
+  const sidebarBg = isDark ? lighten(s.colorBg, 8) : darken(s.colorBg, 4);
+
+  // Hero
+  let heroCSS = '';
+  let heroHeightVal = {small:'200px',medium:'350px',large:'500px',fullscreen:'100vh'}[s.heroHeight]||'350px';
+  if(s.heroStyle==='image' && s.heroImage){
+    heroCSS = `background:url('${s.heroImage}') center/cover no-repeat`;
+  } else if(s.heroStyle==='gradient'){
+    heroCSS = `background:linear-gradient(135deg,${s.colorHeader} 0%,${s.colorPrimary} 100%)`;
+  } else if(s.heroStyle==='solid'){
+    heroCSS = `background:${s.colorHeader}`;
+  } else if(s.heroStyle==='pattern'){
+    heroCSS = pick(CSS_PATTERNS)(s.colorHeader);
+  } else if(s.heroStyle==='split'){
+    heroCSS = `background:linear-gradient(90deg,${s.colorHeader} 55%,${s.colorPrimary} 55%)`;
+  } else if(s.heroStyle==='image' && !s.heroImage){
+    // Fallback to gradient if image style selected but no image chosen
+    heroCSS = `background:linear-gradient(135deg,${s.colorHeader} 0%,${s.colorPrimary} 100%)`;
+  }
+
+  // Google Fonts
+  const gfHeading = s.fontHeading.replace(/ /g,'+');
+  const gfBody = s.fontBody.replace(/ /g,'+');
+  const googleFontsUrl = `https://fonts.googleapis.com/css2?family=${gfHeading}:wght@400;600;700&family=${gfBody}:wght@400;500;600&display=swap`;
+  const googleFontsLinks = `<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="${googleFontsUrl}" rel="stylesheet">`;
+
+  // Sidebar width
+  const sidebarWidth = '280px';
+  const hasSidebar = s.includeSidebar && s.sidebarPos!=='none';
+
+  // --- Menu HTML ---
+  const menuHtml = buildMenuHtml(s);
+
+  // --- Search form ---
+  const searchFormHtml = s.includeSearch ? `
+<!-- START SEARCHFORM -->
+<form method="post" class="qs-search-form" name="Search" action="[SF_ACTIONURL]">
+[SF_HIDDENFIELD]
+<input maxlength="100" type="text" name="svalue" id="s" value="[SF_TEXTVALUE]" onclick="javascript:this.select();" placeholder="Search...">
+<input type="submit" value="Search" name="search" class="qs-search-btn">
+</form>
+<!-- END SEARCHFORM -->` : '';
+
+  // --- Content block ---
+  const contentBody = `<h2 class="qs-page-title">[PAGETITLE]</h2>
+<div class="qs-page-body">
+[PAGEBODY][PAGELIST][PAGEFORM][PAGECATALOG][PAGEFEED][PAGEAPPLICATION][PAGETHEME]<div class="cleared"></div>${s.includeBreadcrumbs?`<div style="margin-top:20px;font-size:smaller">[PAGEBREADCRUMBS]</div>`:''}
+</div>`;
+
+  // --- Sidebar blocks ---
+  const sidebarHtml = hasSidebar ? buildSidebarHtml(s, searchFormHtml) : '';
+
+  // --- Footer ---
+  const footerHtml = s.includeFooter ? buildFooterHtml(s) : '';
+
+  // --- Header / nav area ---
+  const headerNavHtml = buildHeaderHtml(s, menuHtml, searchFormHtml, hasSidebar);
+
+  // --- Hero ---
+  const isImageHero = (s.heroStyle==='image' && s.heroImage);
+  const heroOverlay = isImageHero ? `
+<div class="qs-hero-overlay"></div>` : '';
+  const heroImageClass = isImageHero ? ' qs-hero--image' : '';
+  const heroHtml = s.heroEnabled ? `
+<div class="qs-hero${heroImageClass}" style="${heroCSS};min-height:${heroHeightVal}">${heroOverlay}
+  <div class="qs-container qs-hero-inner">
+    <h1 class="qs-hero-title">[SITENAME]</h1>
+    <p class="qs-hero-slogan">[SITESLOGAN]</p>
+  </div>
+</div>` : '';
+
+  // --- Layout grid for content + sidebar ---
+  let mainContentHtml;
+  if(hasSidebar){
+    const contentCol = `<div class="qs-content-main" id="qs-content">${contentBody}</div>`;
+    const sideCol = `<aside class="qs-sidebar">${sidebarHtml}</aside>`;
+    if(s.sidebarPos==='left'){
+      mainContentHtml = `<div class="qs-layout qs-layout-sidebar-left"><div class="qs-container qs-layout-grid">${sideCol}${contentCol}</div></div>`;
+    } else {
+      mainContentHtml = `<div class="qs-layout qs-layout-sidebar-right"><div class="qs-container qs-layout-grid">${contentCol}${sideCol}</div></div>`;
+    }
+  } else {
+    mainContentHtml = `<div class="qs-layout"><div class="qs-container"><div class="qs-content-main qs-content-full" id="qs-content">${contentBody}</div></div></div>`;
+  }
+
+  // --- Banners section ---
+  const bannersHtml = s.includeBanners ? `
+<div class="qs-banners">
+  <div class="qs-container">
+    <div class="qs-banner-grid">
+      <div class="qs-banner-card">
+        <h3>[QSHIGHLIGHTSLABEL]</h3>
+        <div>[QSHIGHLIGHTS]</div>
+      </div>
+      <div class="qs-banner-card">
+        <h3>[QSCONTACTINFOLABEL]</h3>
+        <div>[BANNER]</div>
+      </div>
+    </div>
+  </div>
+</div>` : '';
+
+  // ===== ASSEMBLE FULL TEMPLATE =====
+  let html = `<!DOCTYPE html>
+<html>
+<head>
+<title>[TITLETAG]</title>
+<meta content="[METATAG_AUTHOR]" name="author" />
+<meta content="[METATAG_COPYRIGHT]" name="copyright" />
+<meta content="[METATAG_KEYWORDS]" name="keywords" />
+<meta content="[METATAG_DESCRIPTION]" name="description" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="theme-color" content="${s.colorPrimary}">
+<link rel="STYLESHEET" TYPE="text/css" href="[C_DIRECTORY_QUICKERSITE]/css/qs_ltr.css" title="QSStyle" />
+[METATAG_REFRESH]
+[RSSLINK]
+[FAVICON_LINK]
+[JAVASCRIPT]
+${googleFontsLinks}
+<style>
+/* === Accessibility === */
+.qs-skip-link{
+  position:absolute;top:-100%;left:1rem;padding:.5rem 1rem;
+  background:${s.colorPrimary};color:${textOnPrimary};font-weight:600;
+  z-index:9999;border-radius:0 0 4px 4px;text-decoration:none;
+}
+.qs-skip-link:focus{top:0}
+.qs-sr-only{
+  position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;
+}
+
+/* === QS Template Reset & Base === */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'${s.fontBody}',sans-serif;
+  font-size:${s.fontSize}px;
+  line-height:${s.lineHeight};
+  color:${s.colorText};
+  background:${s.colorBg};
+}
+img{max-width:100%;height:auto}
+a{color:${linkColor};text-decoration:none;transition:color .2s}
+a:hover{color:${linkHover};text-decoration:underline}
+h1,h2,h3,h4,h5,h6{font-family:'${s.fontHeading}',sans-serif;line-height:1.3;margin-bottom:.5em}
+p{margin-bottom:1em}
+.cleared{clear:both}
+ul,ol{margin-left:1.5em;margin-bottom:1em}
+
+/* === Container === */
+.qs-container{
+  width:100%;max-width:${s.maxWidth}px;margin:0 auto;padding:0 1.5rem;
+}
+
+/* === Header === */
+.qs-header{
+  background:${s.colorHeader};
+  color:${textOnHeader};
+  ${s.headerStyle==='overlay'?'position:absolute;top:0;left:0;right:0;z-index:100;background:'+rgba(s.colorHeader,.85)+';backdrop-filter:blur(10px);':''}
+  ${s.headerStyle==='minimal'?'padding:.5rem 0;':'padding:1rem 0;'}
+}
+.qs-header a{color:${textOnHeader}}
+.qs-header a:hover{color:${lighten(textOnHeader,20)};opacity:.85}
+.qs-header-inner{
+  display:flex;align-items:center;
+  ${s.headerStyle==='centered'?'flex-direction:column;text-align:center;gap:.75rem;':'justify-content:space-between;gap:1rem;'}
+  flex-wrap:wrap;
+}
+.qs-logo{display:flex;flex-direction:column}
+.qs-logo-name{font-size:${s.headerStyle==='minimal'?'1.25rem':'1.6rem'};margin:0;font-weight:700;font-family:'${s.fontHeading}',sans-serif}
+.qs-logo p{font-size:.85rem;opacity:.75;margin:0}
+
+/* === Navigation (Bootstrap 3 menu) === */
+.qs-nav{position:relative}
+/* Reset the BS3 ul */
+.qs-nav ul.nav.navbar-nav{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:0}
+.qs-nav ul.nav.navbar-nav > li{position:relative}
+.qs-nav ul.nav.navbar-nav > li > a{
+  display:block;padding:.6rem 1rem;font-size:.9rem;font-weight:500;
+  color:${textOnHeader};text-decoration:none;transition:background .2s,color .2s;
+  border-radius:4px;cursor:pointer;
+}
+.qs-nav ul.nav.navbar-nav > li > a:hover,
+.qs-nav ul.nav.navbar-nav > li > a:focus,
+.qs-nav ul.nav.navbar-nav > li.active > a{
+  background:${rgba(textOnHeader,.12)};text-decoration:none;
+}
+/* Caret */
+.qs-nav .caret{
+  display:inline-block;width:0;height:0;margin-left:4px;vertical-align:middle;
+  border-top:4px solid;border-right:4px solid transparent;border-left:4px solid transparent;
+}
+/* Dropdown level 2 */
+.qs-nav .dropdown-menu{
+  display:none;position:absolute;top:100%;left:0;min-width:200px;
+  list-style:none;margin:0;padding:.35rem 0;
+  background:${isDark?lighten(s.colorHeader,10):s.colorHeader};
+  border:1px solid ${rgba(textOnHeader,.15)};
+  border-radius:0 0 6px 6px;box-shadow:0 8px 24px rgba(0,0,0,.18);z-index:200;
+}
+.qs-nav .dropdown:hover > .dropdown-menu{display:block}
+.qs-nav .dropdown-menu > li{position:relative}
+.qs-nav .dropdown-menu > li > a{
+  display:block;padding:.45rem 1rem;font-size:.85rem;color:${textOnHeader};
+  text-decoration:none;transition:background .15s;white-space:nowrap;
+}
+.qs-nav .dropdown-menu > li > a:hover{
+  background:${rgba(textOnHeader,.1)};text-decoration:none;
+}
+/* Dropdown level 3+ */
+.qs-nav .dropdown-menu .dropdown-menu{top:0;left:100%;border-radius:0 6px 6px 0}
+
+/* Mobile nav toggle (CSS-only checkbox hack) */
+.qs-nav-check{display:none}
+.qs-nav-toggle{
+  display:none;background:none;border:2px solid ${textOnHeader};color:${textOnHeader};
+  padding:.4rem .7rem;border-radius:4px;font-size:1.2rem;cursor:pointer;
+  user-select:none;-webkit-user-select:none;line-height:1;
+}
+
+/* === Hero === */
+.qs-hero{
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  color:${textOnHeader};position:relative;
+  ${s.headerStyle==='overlay'?'padding-top:80px;':''}
+}
+.qs-hero-overlay{
+  position:absolute;top:0;left:0;right:0;bottom:0;
+  background:rgba(0,0,0,.45);z-index:1;
+}
+.qs-hero-inner{padding:3rem 1.5rem;position:relative;z-index:2}
+.qs-hero-title{font-size:clamp(2rem,5vw,3.5rem);margin-bottom:.5rem;text-shadow:0 2px 8px rgba(0,0,0,.25)}
+.qs-hero-slogan{font-size:clamp(1rem,2.5vw,1.35rem);opacity:.9;max-width:600px;margin:0 auto}
+.qs-hero--image .qs-hero-title,.qs-hero--image .qs-hero-slogan{color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.5)}
+
+/* === Layout Grid === */
+.qs-layout{padding:2rem 0}
+.qs-layout-grid{
+  display:grid;gap:2rem;
+  grid-template-columns:${hasSidebar?(s.sidebarPos==='left'?sidebarWidth+' 1fr':'1fr '+sidebarWidth):'1fr'};
+}
+.qs-content-main{min-width:0}
+.qs-content-full{max-width:900px}
+
+/* === Page Title === */
+.qs-page-title{
+  font-size:1.75rem;padding-bottom:.75rem;
+  border-bottom:3px solid ${s.colorPrimary};margin-bottom:1.25rem;
+}
+
+/* === Sidebar === */
+.qs-sidebar{}
+.qs-sidebar-block{
+  background:${surfaceColor};border:1px solid ${borderColor};
+  border-radius:8px;padding:1.25rem;margin-bottom:1.25rem;
+}
+.qs-sidebar-block h3{
+  font-size:1rem;margin-bottom:.75rem;padding-bottom:.5rem;
+  border-bottom:2px solid ${s.colorPrimary};
+}
+/* === Banners === */
+.qs-banners{
+  background:${surfaceColor};padding:2.5rem 0;border-top:1px solid ${borderColor};border-bottom:1px solid ${borderColor};
+}
+.qs-banner-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem}
+.qs-banner-card{
+  background:${s.colorBg};border:1px solid ${borderColor};border-radius:8px;padding:1.5rem;
+  border-top:4px solid ${s.colorPrimary};
+}
+.qs-banner-card h3{font-size:1.1rem;margin-bottom:.75rem;color:${s.colorPrimary}}
+
+/* === Search Form === */
+.qs-search-form{display:flex;gap:.35rem;max-width:300px;width:100%}
+.qs-search-form input[type="text"]{
+  flex:1 1 0%;min-width:0;padding:.45rem .7rem;border:1px solid ${borderColor};border-radius:4px;
+  font-size:.85rem;background:${s.colorBg};color:${s.colorText};
+}
+.qs-search-btn{
+  flex-shrink:0;padding:.45rem .9rem;background:${s.colorPrimary};color:${textOnPrimary};
+  border:none;border-radius:4px;font-size:.82rem;cursor:pointer;font-weight:600;
+}
+.qs-search-btn:hover{opacity:.88}
+
+/* Sidebar search override */
+.qs-sidebar-block .qs-search-form{max-width:100%}
+
+/* === Footer === */
+.qs-footer{
+  background:${s.colorFooter};color:${textOnFooter};padding:2.5rem 0 1.5rem;
+  ${isDark?'':'border-top:1px solid '+borderColor+';'}
+}
+.qs-footer a{color:${lighten(textOnFooter,15)}}
+.qs-footer a:hover{color:${s.colorPrimary}}
+.qs-footer-grid{
+  display:grid;grid-template-columns:repeat(${s.footerCols},1fr);gap:2rem;margin-bottom:2rem;
+}
+.qs-footer-col h4{font-size:.95rem;margin-bottom:.75rem;color:${lighten(textOnFooter,10)}}
+.qs-footer-col p,.qs-footer-col ul{font-size:.85rem;opacity:.85}
+.qs-footer-col ul{list-style:none;margin:0;padding:0}
+.qs-footer-col ul li{margin-bottom:.35rem}
+.qs-footer-bottom{
+  border-top:1px solid ${rgba(textOnFooter,.15)};
+  padding-top:1rem;display:flex;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:.5rem;font-size:.8rem;opacity:.7;
+}
+
+/* === RSS === */
+.qs-rss{display:inline-flex;align-items:center;gap:.35rem}
+
+/* === Boxed layout === */
+${s.layoutStyle==='boxed'?`
+.qs-page-wrapper{max-width:${s.maxWidth+60}px;margin:0 auto;box-shadow:0 0 40px rgba(0,0,0,.15)}
+`:''}
+
+/* === Responsive === */
+@media(max-width:768px){
+  .qs-layout-grid{grid-template-columns:1fr !important}
+  .qs-footer-grid{grid-template-columns:1fr !important}
+  .qs-header-inner{flex-direction:column;text-align:center}
+  .qs-nav ul.nav.navbar-nav{display:none;flex-direction:column;width:100%;
+    background:${isDark?lighten(s.colorHeader,5):darken(s.colorHeader,3)};border-radius:6px;padding:.5rem 0}
+  .qs-nav-check:checked ~ ul.nav.navbar-nav{display:flex}
+  .qs-nav .dropdown-menu{display:block;position:static;box-shadow:none;border:none;border-radius:0;background:transparent;padding-left:1rem}
+  .qs-nav .caret{display:none}
+  .qs-nav-toggle{display:inline-block}
+  .qs-hero-title{font-size:1.8rem}
+  .qs-banner-grid{grid-template-columns:1fr}
+}
+
+/* === Print === */
+@media print{
+  .qs-header,.qs-hero,.qs-nav,.qs-sidebar,.qs-search-form,
+  .qs-banners,.qs-footer,.qs-skip-link,.qs-nav-toggle,.qs-nav-check{display:none !important}
+  body{color:#000;background:#fff;font-size:12pt;line-height:1.5}
+  .qs-layout-grid{display:block !important}
+  .qs-content-main{width:100% !important;max-width:100% !important}
+  a{color:#000;text-decoration:underline}
+  a[href]::after{content:" (" attr(href) ")";font-size:.8em}
+}
+</style>
+${s.includeAnalytics?'[GOOGLEANALYTICS]':''}
+[PAGEHEADER]
+</head>
+<body>
+<a href="#qs-content" class="qs-skip-link">Skip to content</a>
+<div class="${s.layoutStyle==='boxed'?'qs-page-wrapper':''}">
+
+${headerNavHtml}
+${heroHtml}
+${mainContentHtml}
+${bannersHtml}
+${footerHtml}
+
+</div>
+<!-- this page was generated in [PAGERENDERTIME] ms -->
+</body>
+</html>`;
+
+  return html;
+}
+
+/* ===========================================================
+   BUILD HEADER HTML
+   =========================================================== */
+function buildHeaderHtml(s, menuHtml, searchFormHtml, hasSidebar){
+  // When hero is enabled, it carries the <h1>. Logo becomes a styled <div> to avoid double h1.
+  const logoTag = s.heroEnabled ? 'div' : 'h1';
+
+  let logoBlock = `<div class="qs-logo">
+  <${logoTag} class="qs-logo-name"><a href="/">[SITENAME]</a></${logoTag}>
+  <p>[SITESLOGAN]</p>
+</div>`;
+
+  let navBlock = `<nav class="qs-nav">
+  <input type="checkbox" id="qs-nav-check" class="qs-nav-check" aria-hidden="true">
+  <label for="qs-nav-check" class="qs-nav-toggle" role="button" aria-label="Toggle navigation">&#9776;</label>
+  ${menuHtml}
+</nav>`;
+
+  // Some header styles add search in header
+  let headerSearchHtml = '';
+  if(s.includeSearch && (s.headerStyle==='split' || s.headerStyle==='minimal')){
+    headerSearchHtml = `<div class="qs-header-search">${buildSearchFormHtml()}</div>`;
+  }
+
+  let inner = '';
+  if(s.headerStyle==='classic'){
+    inner = `<div class="qs-container">
+  ${logoBlock}
+</div>
+<div style="background:${rgba('#000000',.1)}">
+  <div class="qs-container" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap">
+    ${navBlock}
+    ${headerSearchHtml}
+  </div>
+</div>`;
+  } else if(s.headerStyle==='centered'){
+    inner = `<div class="qs-container qs-header-inner">
+  ${logoBlock}
+  ${navBlock}
+</div>`;
+  } else if(s.headerStyle==='split'){
+    inner = `<div class="qs-container qs-header-inner">
+  ${logoBlock}
+  <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+    ${navBlock}
+    ${headerSearchHtml}
+  </div>
+</div>`;
+  } else if(s.headerStyle==='overlay'){
+    inner = `<div class="qs-container qs-header-inner" style="justify-content:space-between">
+  ${logoBlock}
+  ${navBlock}
+</div>`;
+  } else if(s.headerStyle==='minimal'){
+    inner = `<div class="qs-container qs-header-inner">
+  ${logoBlock}
+  ${navBlock}
+  ${headerSearchHtml}
+</div>`;
+  }
+
+  return `<header class="qs-header">${inner}</header>`;
+}
+
+function buildSearchFormHtml(){
+  return `<!-- START SEARCHFORM -->
+<form method="post" class="qs-search-form" name="Search" action="[SF_ACTIONURL]">
+[SF_HIDDENFIELD]
+<label for="s" class="qs-sr-only">Search</label>
+<input maxlength="100" type="text" name="svalue" id="s" value="[SF_TEXTVALUE]" onclick="this.select();" placeholder="Search...">
+<input type="submit" value="Search" name="search" class="qs-search-btn">
+</form>
+<!-- END SEARCHFORM -->`;
+}
+
+/* ===========================================================
+   BUILD MENU HTML - MULTI-LEVEL UL/LI
+   =========================================================== */
+function buildMenuHtml(s){
+  return `[QS_BOOTSTRAPMENU_3]`;
+}
+
+/* ===========================================================
+   BUILD SIDEBAR HTML
+   =========================================================== */
+function buildSidebarHtml(s, searchFormHtml){
+  let blocks = [];
+
+  // Search block (if not in header)
+  if(s.includeSearch && s.headerStyle!=='split' && s.headerStyle!=='minimal'){
+    blocks.push(`<div class="qs-sidebar-block">
+  <h3>Search</h3>
+  ${buildSearchFormHtml()}
+</div>`);
+  }
+
+  // Highlights
+  if(s.includeBanners){
+    blocks.push(`<div class="qs-sidebar-block">
+  <h3>[QSHIGHLIGHTSLABEL]</h3>
+  <div>[QSHIGHLIGHTS]</div>
+</div>`);
+  }
+
+  // Contact info
+  blocks.push(`<div class="qs-sidebar-block">
+  <h3>[QSCONTACTINFOLABEL]</h3>
+  <div>[BANNER]</div>
+</div>`);
+
+  // RSS
+  if(s.includeRSS){
+    blocks.push(`<div class="qs-sidebar-block">
+  <h3>RSS Feed</h3>
+  <div class="qs-rss">[RSSLINKART] Subscribe to our feed</div>
+</div>`);
+  }
+
+  return blocks.join('\n');
+}
+
+/* ===========================================================
+   BUILD FOOTER HTML
+   =========================================================== */
+function buildFooterHtml(s){
+  let cols = [];
+  const n = s.footerCols;
+
+  // Column 1: always site info
+  cols.push(`<div class="qs-footer-col">
+  <h4>[SITENAME]</h4>
+  <p>[SITESLOGAN]</p>
+  ${s.includeRSS?'<p class="qs-rss">[RSSLINKART]</p>':''}
+</div>`);
+
+  // Column 2: contact info (if >1 col)
+  if(n>=2){
+    cols.push(`<div class="qs-footer-col">
+  <h4>[QSCONTACTINFOLABEL]</h4>
+  <div>[BANNER]</div>
+</div>`);
+  }
+
+  // Column 3: highlights (if >2 cols)
+  if(n>=3){
+    cols.push(`<div class="qs-footer-col">
+  <h4>[QSHIGHLIGHTSLABEL]</h4>
+  <div>[QSHIGHLIGHTS]</div>
+</div>`);
+  }
+
+  // Column 4: search (if 4 cols)
+  if(n>=4 && s.includeSearch){
+    cols.push(`<div class="qs-footer-col">
+  <h4>Search</h4>
+  ${buildSearchFormHtml()}
+</div>`);
+  } else if(n>=4){
+    cols.push(`<div class="qs-footer-col">
+  <h4>More</h4>
+  <p>Additional content can be placed here.</p>
+</div>`);
+  }
+
+  return `
+<footer class="qs-footer">
+  <div class="qs-container">
+    <div class="qs-footer-grid">
+      ${cols.join('\n      ')}
+    </div>
+    <div class="qs-footer-bottom">
+      <div>[QSSITEFOOTER]</div>
+      <div>${s.includeRSS?'[RSSLINKART]':''}</div>
+    </div>
+  </div>
+</footer>`;
+}
+
+/* ===========================================================
+   RENDER PREVIEW
+   =========================================================== */
+function renderPreview(){
+  const frame = document.getElementById('previewFrame');
+  const src = document.getElementById('sourceView');
+
+  // Replace QS variables with dummy content for preview
+  let previewHtml = currentSource;
+  const replacements = {
+    '[TITLETAG]':'Welcome to Our Site - My Website',
+    '[METATAG_AUTHOR]':'My Website',
+    '[METATAG_COPYRIGHT]':'Copyright My Website',
+    '[METATAG_KEYWORDS]':'quickersite, cms, website',
+    '[METATAG_DESCRIPTION]':'Welcome to My Website, powered by QuickerSite CMS.',
+    '[C_DIRECTORY_QUICKERSITE]':'/quickersite',
+    '[METATAG_REFRESH]':'',
+    '[RSSLINK]':'<link rel="alternate" type="application/rss+xml" title="RSS" href="/rss.asp" />',
+    '[FAVICON_LINK]':'<link rel="shortcut icon" href="/favicon.ico" />',
+    '[JAVASCRIPT]':'<!-- QuickerSite JavaScript -->',
+    '[PAGEHEADER]':'<!-- Page Header -->',
+    '[SITENAME]':'My Website',
+    '[SITESLOGAN]':'Building something amazing, one page at a time',
+    '[PAGETITLE]':'Welcome to Our Site',
+    '[PAGEBODY]':'<p>This is the main content area where your page body will appear. QuickerSite will replace this variable with the actual page content. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.</p><p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>',
+    '[PAGELIST]':'',
+    '[PAGEFORM]':'',
+    '[PAGECATALOG]':'',
+    '[PAGEFEED]':'',
+    '[PAGEAPPLICATION]':'',
+    '[PAGETHEME]':'',
+    '[PAGEBREADCRUMBS]':'<a href="/">Home</a> &raquo; <a href="#">Section</a> &raquo; Current Page',
+    '[QSHIGHLIGHTSLABEL]':'Highlights',
+    '[QSHIGHLIGHTS]':'<ul><li>Feature one is amazing</li><li>Feature two is great</li><li>Feature three is superb</li></ul>',
+    '[QSCONTACTINFOLABEL]':'Contact Info',
+    '[BANNER]':'<p><strong>Company Name</strong><br>123 Main Street<br>City, State 12345<br>Phone: (555) 123-4567<br>Email: info@example.com</p>',
+    '[QSSITEFOOTER]':'&copy; 2026 My Website. All rights reserved.',
+    '[RSSLINKART]':'<a href="/rss.asp" title="RSS Feed">&#9741; RSS</a>',
+    '[GOOGLEANALYTICS]':'<!-- Google Analytics code will appear here -->',
+    '[PAGERENDERTIME]':'15',
+    '[SF_ACTIONURL]':'#',
+    '[SF_HIDDENFIELD]':'',
+    '[SF_TEXTVALUE]':'',
+  };
+
+  // Replace [QS_BOOTSTRAPMENU_3] with demo menu matching actual QS Bootstrap 3 output
+  const demoMenu = `<ul class="nav navbar-nav"><li class="active"><a href="#">Home</a></li><li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">About<span class="caret"></span></a><ul class="dropdown-menu"><li><a href="#">Our Story</a></li><li><a href="#">Team</a></li><li><a href="#">Careers</a></li></ul></li><li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Services<span class="caret"></span></a><ul class="dropdown-menu"><li><a href="#">Web Development</a></li><li><a href="#">Consulting</a></li><li><a href="#">Support</a></li></ul></li><li><a href="#">Portfolio</a></li><li><a href="#">Blog</a></li><li><a href="#">Contact</a></li></ul>`;
+
+  previewHtml = previewHtml.replace('[QS_BOOTSTRAPMENU_3]', demoMenu);
+
+  for(let [k,v] of Object.entries(replacements)){
+    while(previewHtml.includes(k)){
+      previewHtml = previewHtml.replace(k, v);
+    }
+  }
+
+  // Write to iframe
+  const doc = frame.contentDocument || frame.contentWindow.document;
+  doc.open();
+  doc.write(previewHtml);
+  doc.close();
+
+  // Source view (show actual template with QS variables)
+  src.textContent = currentSource;
+}
+
+
+
+/* ===========================================================
+   UI INTERACTIONS
+   =========================================================== */
+window.togglePanel = function(el){
+  el.parentElement.classList.toggle('collapsed');
+};
+
+window.switchView = function(view, btn){
+  const frame = document.getElementById('previewFrame');
+  const src = document.getElementById('sourceView');
+  document.querySelectorAll('.preview-bar .tab-group:first-child .tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  if(view==='source'){
+    frame.classList.add('hidden');
+    src.classList.add('active');
+  } else {
+    frame.classList.remove('hidden');
+    src.classList.remove('active');
+  }
+};
+
+window.switchDevice = function(device, btn){
+  const container = document.getElementById('previewContainer');
+  document.querySelectorAll('.preview-bar .tab-group:nth-child(2) .tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  if(device==='mobile'){
+    container.classList.add('mobile');
+  } else {
+    container.classList.remove('mobile');
+  }
+};
+
+window.downloadTemplate = function(){
+  if(!currentSource){showToast('Generate a template first!');return}
+  const blob = new Blob([currentSource],{type:'text/html;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'page.html';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('Template downloaded as page.html');
+};
+
+window.copySource = function(){
+  if(!currentSource){showToast('Generate a template first!');return}
+  navigator.clipboard.writeText(currentSource).then(()=>{
+    showToast('Source code copied to clipboard!');
+  }).catch(()=>{
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = currentSource;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('Source code copied to clipboard!');
+  });
+};
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2500);
+}
+
+/* ===========================================================
+   INITIAL GENERATION ON LOAD + AUTO-REGENERATE WIRING
+   =========================================================== */
+window.addEventListener('DOMContentLoaded', function(){
+  generateTemplate();
+
+  // Auto-regenerate on ANY sidebar input change
+  var sidebar = document.getElementById('sidebar');
+  // Selects, text inputs, number inputs
+  sidebar.querySelectorAll('select, input[type="text"], input[type="number"]').forEach(function(el){
+    el.addEventListener('change', liveUpdate);
+    el.addEventListener('input', liveUpdate);
+  });
+  // Color inputs (fire rapidly while dragging)
+  sidebar.querySelectorAll('input[type="color"]').forEach(function(el){
+    el.addEventListener('input', liveUpdate);
+    el.addEventListener('change', liveUpdate);
+  });
+  // Checkboxes / toggles
+  sidebar.querySelectorAll('input[type="checkbox"]').forEach(function(el){
+    el.addEventListener('change', liveUpdate);
+  });
+  // Hidden inputs (heroImage) - watch via MutationObserver
+  var heroImageEl = document.getElementById('heroImage');
+  if(heroImageEl){
+    new MutationObserver(liveUpdate).observe(heroImageEl, {attributes:true, attributeFilter:['value']});
+    // Also poll on setter override
+    var _origVal = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value');
+    Object.defineProperty(heroImageEl, 'value', {
+      get: function(){ return _origVal.get.call(this); },
+      set: function(v){ _origVal.set.call(this, v); liveUpdate(); }
+    });
+  }
+});
+
+})();
+</script>
+</body>
+</html>
