@@ -367,6 +367,16 @@ label.toggle input{accent-color:var(--accent);width:16px;height:16px}
     </div>
   </div>
 
+  <!-- ENHANCEMENTS -->
+  <div class="panel">
+    <div class="panel-head" onclick="togglePanel(this)">Enhancements</div>
+    <div class="panel-body">
+      <label class="toggle"><input type="checkbox" id="optAOS" checked> Animate on Scroll (fade-in effects)</label>
+      <label class="toggle"><input type="checkbox" id="optDarkMode" checked> Dark/Light mode toggle button</label>
+      <label class="toggle"><input type="checkbox" id="optScrollProgress" checked> Scroll progress bar</label>
+    </div>
+  </div>
+
   <!-- ADVANCED -->
   <div class="panel collapsed">
     <div class="panel-head" onclick="togglePanel(this)">Advanced / QS Variables</div>
@@ -613,8 +623,10 @@ function readState(){
     includeFooter: document.getElementById('optIncludeFooter').checked,
     includeRSS: document.getElementById('optRSS').checked,
     includeAnalytics: document.getElementById('optAnalytics').checked,
-
     includeBreadcrumbs: document.getElementById('optBreadcrumbs').checked,
+    includeAOS: document.getElementById('optAOS').checked,
+    includeDarkMode: document.getElementById('optDarkMode').checked,
+    includeScrollProgress: document.getElementById('optScrollProgress').checked,
   };
 }
 
@@ -769,9 +781,12 @@ function buildTemplate(s){
 </form>
 <!-- END SEARCHFORM -->` : '';
 
+  // --- AOS helper ---
+  const aos = s.includeAOS ? ' qs-aos' : '';
+
   // --- Content block ---
-  const contentBody = `<h2 class="qs-page-title">[PAGETITLE]</h2>
-<div class="qs-page-body">
+  const contentBody = `<h2 class="qs-page-title${aos}">[PAGETITLE]</h2>
+<div class="qs-page-body${aos}">
 [PAGEBODY][PAGELIST][PAGEFORM][PAGECATALOG][PAGEFEED][PAGEAPPLICATION][PAGETHEME]<div class="cleared"></div>${s.includeBreadcrumbs?`<div style="margin-top:20px;font-size:smaller">[PAGEBREADCRUMBS]</div>`:''}
 </div>`;
 
@@ -816,11 +831,11 @@ function buildTemplate(s){
 <div class="qs-banners">
   <div class="qs-container">
     <div class="qs-banner-grid">
-      <div class="qs-banner-card">
+      <div class="qs-banner-card${aos}">
         <h3>[QSHIGHLIGHTSLABEL]</h3>
         <div>[QSHIGHLIGHTS]</div>
       </div>
-      <div class="qs-banner-card">
+      <div class="qs-banner-card${aos}">
         <h3>[QSCONTACTINFOLABEL]</h3>
         <div>[BANNER]</div>
       </div>
@@ -902,7 +917,7 @@ ul,ol{margin-left:1.5em;margin-bottom:1em}
 .qs-logo p{font-size:.85rem;opacity:.75;margin:0}
 
 /* === Navigation (Bootstrap 3 menu) === */
-.qs-nav{position:relative}
+.qs-nav{position:relative;display:flex;align-items:center;gap:.25rem}
 /* Reset the BS3 ul */
 .qs-nav ul.nav.navbar-nav{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:0}
 .qs-nav ul.nav.navbar-nav > li{position:relative}
@@ -1038,6 +1053,90 @@ ul,ol{margin-left:1.5em;margin-bottom:1em}
 /* === RSS === */
 .qs-rss{display:inline-flex;align-items:center;gap:.35rem}
 
+/* === Buttons (.art-button from QuickerSite) === */
+.art-button,input.art-button,a.art-button{
+  display:inline-block;padding:.6rem 1.5rem;
+  background:${s.colorPrimary};color:${textOnPrimary};
+  border:none;border-radius:6px;font-size:.9rem;font-weight:600;
+  font-family:'${s.fontBody}',sans-serif;
+  cursor:pointer;text-decoration:none;text-align:center;
+  transition:background .2s,transform .15s,box-shadow .2s;
+  line-height:1.5;letter-spacing:.02em;
+}
+.art-button:hover,input.art-button:hover,a.art-button:hover{
+  background:${darken(s.colorPrimary,10)};color:${textOnPrimary};
+  transform:translateY(-1px);box-shadow:0 4px 12px ${rgba(s.colorPrimary,.35)};
+  text-decoration:none;
+}
+.art-button:active,input.art-button:active{transform:translateY(0);box-shadow:none}
+
+/* === Content images === */
+.qs-page-body img{transition:transform .25s,box-shadow .25s;border-radius:4px}
+.qs-page-body img:hover{transform:scale(1.02);box-shadow:0 8px 24px rgba(0,0,0,.15)}
+
+/* === Content tables === */
+.qs-page-body table{
+  width:100%;border-collapse:collapse;margin-bottom:1.5em;font-size:.92em;
+}
+.qs-page-body table th,.qs-page-body table td{
+  padding:.6rem .8rem;text-align:left;border-bottom:1px solid ${borderColor};
+}
+.qs-page-body table th{
+  background:${surfaceColor};font-weight:600;border-bottom:2px solid ${s.colorPrimary};
+}
+.qs-page-body table tr:hover td{background:${rgba(s.colorPrimary,.04)}}
+
+/* === Scroll progress bar === */
+.qs-scroll-progress{
+  position:fixed;top:0;left:0;height:3px;
+  background:${s.colorPrimary};width:0%;z-index:9999;
+  transition:width .1s linear;pointer-events:none;
+}
+
+/* === Dark/Light mode toggle (in nav) === */
+.qs-mode-toggle{
+  background:none;border:none;color:${textOnHeader};
+  cursor:pointer;font-size:1.2rem;padding:.4rem 0;
+  border-radius:4px;transition:background .2s;line-height:1;
+  display:inline-flex;align-items:center;justify-content:center;
+  width:2.4rem;text-align:center;
+}
+.qs-mode-toggle:hover{background:${rgba(textOnHeader,.12)}}
+
+/* Dark mode overrides */
+body.qs-dark{
+  background:${isDark?s.colorBg:'#1a1a2e'};
+  color:${isDark?s.colorText:'#e0e0e0'};
+}
+body.qs-dark .qs-page-title{border-bottom-color:${s.colorPrimary}}
+body.qs-dark .qs-sidebar-block{
+  background:${isDark?surfaceColor:'#222240'};
+  border-color:${isDark?borderColor:'#2e2e50'};
+}
+body.qs-dark .qs-banners{
+  background:${isDark?surfaceColor:'#222240'};
+  border-color:${isDark?borderColor:'#2e2e50'};
+}
+body.qs-dark .qs-banner-card{
+  background:${isDark?s.colorBg:'#1a1a2e'};
+  border-color:${isDark?borderColor:'#2e2e50'};
+}
+body.qs-dark .qs-search-form input[type="text"]{
+  background:${isDark?s.colorBg:'#222240'};
+  border-color:${isDark?borderColor:'#2e2e50'};
+  color:${isDark?s.colorText:'#e0e0e0'};
+}
+body.qs-dark a{color:${isDark?linkColor:lighten(s.colorPrimary,20)}}
+body.qs-dark .qs-page-body table th{background:${isDark?surfaceColor:'#222240'}}
+body.qs-dark .qs-page-body table td{border-color:${isDark?borderColor:'#2e2e50'}}
+body.qs-dark .qs-mode-toggle{color:${isDark?textOnHeader:'#e0e0e0'}}
+
+/* === Animate on Scroll === */
+${s.includeAOS?`
+.qs-aos-ready .qs-aos{opacity:0;transform:translateY(30px);transition:opacity .6s ease,transform .6s ease}
+.qs-aos-ready .qs-aos.qs-aos-visible{opacity:1;transform:translateY(0)}
+`:''}
+
 /* === Boxed layout === */
 ${s.layoutStyle==='boxed'?`
 .qs-page-wrapper{max-width:${s.maxWidth+60}px;margin:0 auto;box-shadow:0 0 40px rgba(0,0,0,.15)}
@@ -1048,6 +1147,7 @@ ${s.layoutStyle==='boxed'?`
   .qs-layout-grid{grid-template-columns:1fr !important}
   .qs-footer-grid{grid-template-columns:1fr !important}
   .qs-header-inner{flex-direction:column;text-align:center}
+  .qs-nav{flex-wrap:wrap}
   .qs-nav ul.nav.navbar-nav{display:none;flex-direction:column;width:100%;
     background:${isDark?lighten(s.colorHeader,5):darken(s.colorHeader,3)};border-radius:6px;padding:.5rem 0}
   .qs-nav-check:checked ~ ul.nav.navbar-nav{display:flex}
@@ -1061,7 +1161,9 @@ ${s.layoutStyle==='boxed'?`
 /* === Print === */
 @media print{
   .qs-header,.qs-hero,.qs-nav,.qs-sidebar,.qs-search-form,
-  .qs-banners,.qs-footer,.qs-skip-link,.qs-nav-toggle,.qs-nav-check{display:none !important}
+  .qs-banners,.qs-footer,.qs-skip-link,.qs-nav-toggle,.qs-nav-check,
+  .qs-scroll-progress,.qs-mode-toggle{display:none !important}
+  .qs-aos{opacity:1 !important;transform:none !important}
   body{color:#000;background:#fff;font-size:12pt;line-height:1.5}
   .qs-layout-grid{display:block !important}
   .qs-content-main{width:100% !important;max-width:100% !important}
@@ -1073,6 +1175,7 @@ ${s.includeAnalytics?'[GOOGLEANALYTICS]':''}
 [PAGEHEADER]
 </head>
 <body>
+${s.includeScrollProgress?'<div class="qs-scroll-progress" id="qs-scroll-progress"></div>':''}
 <a href="#qs-content" class="qs-skip-link">Skip to content</a>
 <div class="${s.layoutStyle==='boxed'?'qs-page-wrapper':''}">
 
@@ -1083,6 +1186,11 @@ ${bannersHtml}
 ${footerHtml}
 
 </div>
+<script>
+${s.includeScrollProgress?`window.addEventListener('scroll',function(){var h=document.documentElement,b=document.body;var st=h.scrollTop||b.scrollTop;var sh=h.scrollHeight||b.scrollHeight;var pct=(st/(sh-h.clientHeight))*100;document.getElementById('qs-scroll-progress').style.width=pct+'%';});`:''}
+${s.includeDarkMode?`(function(){var btn=document.getElementById('qs-mode-toggle');var saved=localStorage.getItem('qs-dark-mode');if(saved==='true')document.body.classList.add('qs-dark');if(btn){btn.addEventListener('click',function(){document.body.classList.toggle('qs-dark');localStorage.setItem('qs-dark-mode',document.body.classList.contains('qs-dark'));btn.textContent=document.body.classList.contains('qs-dark')?'\\u2600':'\\u263E';});btn.textContent=document.body.classList.contains('qs-dark')?'\\u2600':'\\u263E';}})();`:''}
+${s.includeAOS?`(function(){var els=document.querySelectorAll('.qs-aos');if(!els.length)return;if('IntersectionObserver' in window){document.documentElement.classList.add('qs-aos-ready');var n=0;var obs=new IntersectionObserver(function(entries){var vis=[];entries.forEach(function(e){if(e.isIntersecting)vis.push(e.target);});vis.forEach(function(t,i){t.style.transitionDelay=(i*0.15)+'s';t.classList.add('qs-aos-visible');obs.unobserve(t);});},{threshold:0.15,rootMargin:'0px 0px -40px 0px'});els.forEach(function(el){obs.observe(el);});}})();`:''}
+<\/script>
 <!-- this page was generated in [PAGERENDERTIME] ms -->
 </body>
 </html>`;
@@ -1102,10 +1210,13 @@ function buildHeaderHtml(s, menuHtml, searchFormHtml, hasSidebar){
   <p>[SITESLOGAN]</p>
 </div>`;
 
+  const darkModeBtn = s.includeDarkMode ? `<button class="qs-mode-toggle" id="qs-mode-toggle" title="Toggle dark/light mode" aria-label="Toggle dark/light mode">&#9790;</button>` : '';
+
   let navBlock = `<nav class="qs-nav">
   <input type="checkbox" id="qs-nav-check" class="qs-nav-check" aria-hidden="true">
   <label for="qs-nav-check" class="qs-nav-toggle" role="button" aria-label="Toggle navigation">&#9776;</label>
   ${menuHtml}
+  ${darkModeBtn}
 </nav>`;
 
   // Some header styles add search in header
@@ -1177,10 +1288,11 @@ function buildMenuHtml(s){
    =========================================================== */
 function buildSidebarHtml(s, searchFormHtml){
   let blocks = [];
+  const a = s.includeAOS ? ' qs-aos' : '';
 
   // Search block (if not in header)
   if(s.includeSearch && s.headerStyle!=='split' && s.headerStyle!=='minimal'){
-    blocks.push(`<div class="qs-sidebar-block">
+    blocks.push(`<div class="qs-sidebar-block${a}">
   <h3>Search</h3>
   ${buildSearchFormHtml()}
 </div>`);
@@ -1188,21 +1300,21 @@ function buildSidebarHtml(s, searchFormHtml){
 
   // Highlights
   if(s.includeBanners){
-    blocks.push(`<div class="qs-sidebar-block">
+    blocks.push(`<div class="qs-sidebar-block${a}">
   <h3>[QSHIGHLIGHTSLABEL]</h3>
   <div>[QSHIGHLIGHTS]</div>
 </div>`);
   }
 
   // Contact info
-  blocks.push(`<div class="qs-sidebar-block">
+  blocks.push(`<div class="qs-sidebar-block${a}">
   <h3>[QSCONTACTINFOLABEL]</h3>
   <div>[BANNER]</div>
 </div>`);
 
   // RSS
   if(s.includeRSS){
-    blocks.push(`<div class="qs-sidebar-block">
+    blocks.push(`<div class="qs-sidebar-block${a}">
   <h3>RSS Feed</h3>
   <div class="qs-rss">[RSSLINKART] Subscribe to our feed</div>
 </div>`);
@@ -1217,9 +1329,10 @@ function buildSidebarHtml(s, searchFormHtml){
 function buildFooterHtml(s){
   let cols = [];
   const n = s.footerCols;
+  const a = s.includeAOS ? ' qs-aos' : '';
 
   // Column 1: always site info
-  cols.push(`<div class="qs-footer-col">
+  cols.push(`<div class="qs-footer-col${a}">
   <h4>[SITENAME]</h4>
   <p>[SITESLOGAN]</p>
   ${s.includeRSS?'<p class="qs-rss">[RSSLINKART]</p>':''}
@@ -1227,7 +1340,7 @@ function buildFooterHtml(s){
 
   // Column 2: contact info (if >1 col)
   if(n>=2){
-    cols.push(`<div class="qs-footer-col">
+    cols.push(`<div class="qs-footer-col${a}">
   <h4>[QSCONTACTINFOLABEL]</h4>
   <div>[BANNER]</div>
 </div>`);
@@ -1235,7 +1348,7 @@ function buildFooterHtml(s){
 
   // Column 3: highlights (if >2 cols)
   if(n>=3){
-    cols.push(`<div class="qs-footer-col">
+    cols.push(`<div class="qs-footer-col${a}">
   <h4>[QSHIGHLIGHTSLABEL]</h4>
   <div>[QSHIGHLIGHTS]</div>
 </div>`);
@@ -1243,12 +1356,12 @@ function buildFooterHtml(s){
 
   // Column 4: search (if 4 cols)
   if(n>=4 && s.includeSearch){
-    cols.push(`<div class="qs-footer-col">
+    cols.push(`<div class="qs-footer-col${a}">
   <h4>Search</h4>
   ${buildSearchFormHtml()}
 </div>`);
   } else if(n>=4){
-    cols.push(`<div class="qs-footer-col">
+    cols.push(`<div class="qs-footer-col${a}">
   <h4>More</h4>
   <p>Additional content can be placed here.</p>
 </div>`);
