@@ -1,5 +1,7 @@
 # QuickerSite Template Builder
 
+**Live version:** [https://pietercooreman.github.io/QuickerSite-Template-Generator/](https://pietercooreman.github.io/QuickerSite-Template-Generator/)
+
 A single-file HTML application that generates random, responsive website templates for [QuickerSite](https://quickersite.com), an ASP/VBScript CMS for Windows Servers.
 
 ## What it does
