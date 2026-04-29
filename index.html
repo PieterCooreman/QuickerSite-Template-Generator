@@ -797,7 +797,7 @@ function buildTemplate(s){
   const footerHtml = s.includeFooter ? buildFooterHtml(s) : '';
 
   // --- Header / nav area ---
-  const headerNavHtml = buildHeaderHtml(s, menuHtml, searchFormHtml, hasSidebar);
+  const headerNavHtml = buildHeaderHtml(s, menuHtml, searchFormHtml, hasSidebar, textOnPrimary);
 
   // --- Hero ---
   const isImageHero = (s.heroStyle==='image' && s.heroImage);
@@ -903,16 +903,19 @@ ul,ol{margin-left:1.5em;margin-bottom:1em}
   background:${s.colorHeader};
   color:${textOnHeader};
   ${s.headerStyle==='overlay'?'position:absolute;top:0;left:0;right:0;z-index:100;background:'+rgba(s.colorHeader,.85)+';backdrop-filter:blur(10px);':''}
-  ${s.headerStyle==='minimal'?'padding:.5rem 0;':'padding:1rem 0;'}
+  ${s.headerStyle==='minimal'?'padding:.75rem 0;':'padding:1.25rem 0;'}
 }
 .qs-header a{color:${textOnHeader}}
 .qs-header a:hover{color:${lighten(textOnHeader,20)};opacity:.85}
 .qs-header-inner{
   display:flex;align-items:center;
-  ${s.headerStyle==='centered'?'flex-direction:column;text-align:center;gap:.75rem;':'justify-content:space-between;gap:1rem;'}
+  ${s.headerStyle==='centered'?'flex-direction:column;text-align:center;gap:1rem;':'justify-content:space-between;gap:1.5rem;'}
   flex-wrap:wrap;
 }
-.qs-logo{display:flex;flex-direction:column}
+.qs-logo{display:flex;align-items:center;gap:1rem;padding:.5rem 0}
+.qs-logo-icon{flex-shrink:0;display:block;line-height:0}
+.qs-logo-icon svg{display:block}
+.qs-logo-text{display:flex;flex-direction:column}
 .qs-logo-name{font-size:${s.headerStyle==='minimal'?'1.25rem':'1.6rem'};margin:0;font-weight:700;font-family:'${s.fontHeading}',sans-serif}
 .qs-logo p{font-size:.85rem;opacity:.75;margin:0}
 
@@ -922,7 +925,7 @@ ul,ol{margin-left:1.5em;margin-bottom:1em}
 .qs-nav ul.nav.navbar-nav{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:0}
 .qs-nav ul.nav.navbar-nav > li{position:relative}
 .qs-nav ul.nav.navbar-nav > li > a{
-  display:block;padding:.6rem 1rem;font-size:.9rem;font-weight:500;
+  display:block;padding:.65rem 1.1rem;font-size:.9rem;font-weight:500;
   color:${textOnHeader};text-decoration:none;transition:background .2s,color .2s;
   border-radius:4px;cursor:pointer;
 }
@@ -1201,13 +1204,16 @@ ${s.includeAOS?`(function(){var els=document.querySelectorAll('.qs-aos');if(!els
 /* ===========================================================
    BUILD HEADER HTML
    =========================================================== */
-function buildHeaderHtml(s, menuHtml, searchFormHtml, hasSidebar){
+function buildHeaderHtml(s, menuHtml, searchFormHtml, hasSidebar, textOnPrimary){
   // When hero is enabled, it carries the <h1>. Logo becomes a styled <div> to avoid double h1.
   const logoTag = s.heroEnabled ? 'div' : 'h1';
 
   let logoBlock = `<div class="qs-logo">
-  <${logoTag} class="qs-logo-name"><a href="/">[SITENAME]</a></${logoTag}>
-  <p>[SITESLOGAN]</p>
+  <a href="/" class="qs-logo-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="60" height="60"><rect x="4" y="4" width="40" height="40" rx="10" fill="${s.colorPrimary}"/><text x="24" y="32" text-anchor="middle" font-size="24" font-weight="700" font-family="sans-serif" fill="${textOnPrimary}">Q</text></svg></a>
+  <div class="qs-logo-text">
+    <${logoTag} class="qs-logo-name"><a href="/">[SITENAME]</a></${logoTag}>
+    <p>[SITESLOGAN]</p>
+  </div>
 </div>`;
 
   const darkModeBtn = s.includeDarkMode ? `<button class="qs-mode-toggle" id="qs-mode-toggle" title="Toggle dark/light mode" aria-label="Toggle dark/light mode">&#9790;</button>` : '';
