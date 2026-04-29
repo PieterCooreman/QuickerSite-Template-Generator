@@ -983,7 +983,7 @@ ul,ol{margin-left:1.5em;margin-bottom:1em}
 .qs-hero--image .qs-hero-title,.qs-hero--image .qs-hero-slogan{color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.5)}
 
 /* === Layout Grid === */
-.qs-layout{padding:2rem 0}
+.qs-layout{padding:2rem 0${(s.headerStyle==='overlay' && !s.heroEnabled)?';padding-top:120px':''}}
 .qs-layout-grid{
   display:grid;gap:2rem;
   grid-template-columns:${hasSidebar?(s.sidebarPos==='left'?sidebarWidth+' 1fr':'1fr '+sidebarWidth):'1fr'};
