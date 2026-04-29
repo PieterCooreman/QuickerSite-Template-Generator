@@ -806,7 +806,7 @@ function buildTemplate(s){
   const heroImageClass = isImageHero ? ' qs-hero--image' : '';
   const heroHtml = s.heroEnabled ? `
 <div class="qs-hero${heroImageClass}" style="${heroCSS};min-height:${heroHeightVal}">${heroOverlay}
-  <div class="qs-container qs-hero-inner">
+  <div class="qs-hero-inner">
     <h1 class="qs-hero-title">[SITENAME]</h1>
     <p class="qs-hero-slogan">[SITESLOGAN]</p>
   </div>
@@ -974,7 +974,7 @@ ul,ol{margin-left:1.5em;margin-bottom:1em}
   position:absolute;top:0;left:0;right:0;bottom:0;
   background:rgba(0,0,0,.45);z-index:1;
 }
-.qs-hero-inner{padding:3rem 1.5rem;position:relative;z-index:2}
+.qs-hero-inner{padding:3rem 1.5rem;position:relative;z-index:2;width:100%}
 .qs-hero-title{font-size:clamp(2rem,5vw,3.5rem);margin-bottom:.5rem;text-shadow:0 2px 8px rgba(0,0,0,.25)}
 .qs-hero-slogan{font-size:clamp(1rem,2.5vw,1.35rem);opacity:.9;max-width:600px;margin:0 auto}
 .qs-hero--image .qs-hero-title,.qs-hero--image .qs-hero-slogan{color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.5)}
@@ -986,7 +986,7 @@ ul,ol{margin-left:1.5em;margin-bottom:1em}
   grid-template-columns:${hasSidebar?(s.sidebarPos==='left'?sidebarWidth+' 1fr':'1fr '+sidebarWidth):'1fr'};
 }
 .qs-content-main{min-width:0}
-.qs-content-full{max-width:900px}
+.qs-content-full{max-width:none}
 
 /* === Page Title === */
 .qs-page-title{
