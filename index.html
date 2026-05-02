@@ -271,6 +271,9 @@ label.toggle input{accent-color:var(--accent);width:16px;height:16px}
           <option>Oswald</option><option>Roboto Slab</option><option>Lora</option>
           <option>Nunito</option><option>Source Sans 3</option><option>DM Sans</option>
           <option>Work Sans</option><option>Outfit</option><option>Plus Jakarta Sans</option>
+          <option>DM Serif Display</option><option>Fraunces</option><option>Sora</option>
+          <option>Bricolage Grotesque</option><option>Space Grotesk</option>
+          <option>Manrope</option><option>Syne</option>
         </select>
       </label>
       <label class="ctrl">
@@ -281,6 +284,7 @@ label.toggle input{accent-color:var(--accent);width:16px;height:16px}
           <option>PT Sans</option><option>Merriweather</option><option>Noto Sans</option>
           <option>DM Sans</option><option>Work Sans</option><option>Karla</option>
           <option>Rubik</option><option>Outfit</option><option>Plus Jakarta Sans</option>
+          <option>IBM Plex Sans</option><option>Commissioner</option><option>Manrope</option>
         </select>
       </label>
       <div class="row-2">
@@ -476,10 +480,19 @@ const COLOR_SCHEMES = [
   {primary:'#00d2ff',secondary:'#3a7bd5',bg:'#0a0a23',text:'#e0e0e0',header:'#1a1a40',footer:'#0a0a23',name:'Cyber'},
   {primary:'#f5af19',secondary:'#f12711',bg:'#fdf6e3',text:'#3c3c3c',header:'#3c3c3c',footer:'#2d2d2d',name:'Warm'},
   {primary:'#667eea',secondary:'#764ba2',bg:'#ffffff',text:'#333333',header:'#1a1a2e',footer:'#16213e',name:'Indigo Night'},
+  {primary:'#0f4c81',secondary:'#00b4d8',bg:'#f0f8ff',text:'#1a1a2e',header:'#03045e',footer:'#03045e',name:'Ocean Depth'},
+  {primary:'#c1440e',secondary:'#f4a261',bg:'#fff8f0',text:'#2d1b0e',header:'#370617',footer:'#370617',name:'Ember'},
+  {primary:'#2d6a4f',secondary:'#52b788',bg:'#f0faf4',text:'#1a2e22',header:'#081c15',footer:'#081c15',name:'Forest'},
+  {primary:'#9d4e5e',secondary:'#e8a0b0',bg:'#fff5f7',text:'#2d0f1c',header:'#4a1428',footer:'#4a1428',name:'Rose Gold'},
+  {primary:'#334155',secondary:'#38bdf8',bg:'#f8fafc',text:'#1e293b',header:'#0f172a',footer:'#0f172a',name:'Slate Modern'},
+  {primary:'#b45309',secondary:'#fbbf24',bg:'#fffbeb',text:'#292524',header:'#451a03',footer:'#451a03',name:'Citrus'},
+  {primary:'#0d9488',secondary:'#2dd4bf',bg:'#f0fdfa',text:'#134e4a',header:'#042f2e',footer:'#042f2e',name:'Neon Dusk'},
+  {primary:'#1e3a5f',secondary:'#5b8db8',bg:'#f0f6ff',text:'#1a2840',header:'#0a1628',footer:'#0a1628',name:'Nordic'},
+  {primary:'#525252',secondary:'#a3a3a3',bg:'#fafafa',text:'#262626',header:'#171717',footer:'#171717',name:'Silver'},
 ];
 
-const HEADING_FONTS = ['Inter','Poppins','Montserrat','Playfair Display','Merriweather','Raleway','Oswald','Roboto Slab','Lora','Nunito','Source Sans 3','DM Sans','Work Sans','Outfit','Plus Jakarta Sans'];
-const BODY_FONTS = ['Inter','Open Sans','Roboto','Lato','Source Sans 3','Nunito Sans','PT Sans','Merriweather','Noto Sans','DM Sans','Work Sans','Karla','Rubik','Outfit','Plus Jakarta Sans'];
+const HEADING_FONTS = ['Inter','Poppins','Montserrat','Playfair Display','Merriweather','Raleway','Oswald','Roboto Slab','Lora','Nunito','Source Sans 3','DM Sans','Work Sans','Outfit','Plus Jakarta Sans','DM Serif Display','Fraunces','Sora','Bricolage Grotesque','Space Grotesk','Manrope','Syne'];
+const BODY_FONTS = ['Inter','Open Sans','Roboto','Lato','Source Sans 3','Nunito Sans','PT Sans','Merriweather','Noto Sans','DM Sans','Work Sans','Karla','Rubik','Outfit','Plus Jakarta Sans','IBM Plex Sans','Commissioner','Manrope'];
 
 const CSS_PATTERNS = [
   (c)=>`background:repeating-linear-gradient(45deg,${c},${c} 10px,${lighten(c,5)} 10px,${lighten(c,5)} 20px)`,
@@ -893,6 +906,9 @@ h1,h2,h3,h4,h5,h6{font-family:'${s.fontHeading}',sans-serif;line-height:1.3;marg
 p{margin-bottom:1em}
 .cleared{clear:both}
 ul,ol{margin-left:1.5em;margin-bottom:1em}
+[id]{scroll-margin-top:80px}
+::selection{background:${rgba(s.colorPrimary,.3)};color:${s.colorText}}
+::-moz-selection{background:${rgba(s.colorPrimary,.3)};color:${s.colorText}}
 
 /* === Container === */
 .qs-container{
@@ -1162,6 +1178,12 @@ ${s.layoutStyle==='boxed'?`
   .qs-banner-grid{grid-template-columns:1fr}
 }
 
+/* === Reduced motion === */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;scroll-behavior:auto !important}
+  .qs-aos{opacity:1 !important;transform:none !important}
+}
+
 /* === Print === */
 @media print{
   .qs-header,.qs-hero,.qs-nav,.qs-sidebar,.qs-search-form,
@@ -1192,7 +1214,7 @@ ${footerHtml}
 </div>
 <script>
 ${s.includeScrollProgress?`window.addEventListener('scroll',function(){var h=document.documentElement,b=document.body;var st=h.scrollTop||b.scrollTop;var sh=h.scrollHeight||b.scrollHeight;var pct=(st/(sh-h.clientHeight))*100;document.getElementById('qs-scroll-progress').style.width=pct+'%';});`:''}
-${s.includeDarkMode?`(function(){var btn=document.getElementById('qs-mode-toggle');var saved=localStorage.getItem('qs-dark-mode');if(saved==='true')document.body.classList.add('qs-dark');if(btn){btn.addEventListener('click',function(){document.body.classList.toggle('qs-dark');localStorage.setItem('qs-dark-mode',document.body.classList.contains('qs-dark'));btn.textContent=document.body.classList.contains('qs-dark')?'\\u2600':'\\u263E';});btn.textContent=document.body.classList.contains('qs-dark')?'\\u2600':'\\u263E';}})();`:''}
+${s.includeDarkMode?`(function(){var btn=document.getElementById('qs-mode-toggle');var saved=localStorage.getItem('qs-dark-mode');var sysDark=window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches;if(saved==='true'||(saved===null&&sysDark))document.body.classList.add('qs-dark');if(btn){btn.addEventListener('click',function(){document.body.classList.toggle('qs-dark');localStorage.setItem('qs-dark-mode',document.body.classList.contains('qs-dark'));btn.textContent=document.body.classList.contains('qs-dark')?'\\u2600':'\\u263E';});btn.textContent=document.body.classList.contains('qs-dark')?'\\u2600':'\\u263E';}})();`:''}
 ${s.includeAOS?`(function(){var els=document.querySelectorAll('.qs-aos');if(!els.length)return;if('IntersectionObserver' in window){document.documentElement.classList.add('qs-aos-ready');var obs=new IntersectionObserver(function(entries){var vis=[];entries.forEach(function(e){if(e.isIntersecting)vis.push(e.target);});vis.forEach(function(t,i){t.style.transitionDelay=(i*0.15)+'s';t.classList.add('qs-aos-visible');obs.unobserve(t);});},{threshold:0.15,rootMargin:'0px 0px -40px 0px'});els.forEach(function(el){obs.observe(el);});setTimeout(function(){for(var i=0;i<els.length;i++){els[i].classList.add('qs-aos-visible');}},3000);}})();`:''}
 <\/script>
 <!-- this page was generated in [PAGERENDERTIME] ms -->
