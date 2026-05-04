@@ -81,9 +81,9 @@ Generated templates include:
 
 1. Open `index.html` in your browser
 2. Click **Suggest Random Template** until you find a design you like (or adjust settings manually)
-3. Click **Download Template** -- saves as `page.html`
-4. In QuickerSite backsite, go to **Setup > Templates > Import template**
-5. Upload the `page.html` file
+3. Click **Copy source** or save as `page.html`
+4. In QuickerSite backsite, go to **Setup > Templates > New template**
+5. Paste the html code
 6. Activate the template
 
 ## Requirements
